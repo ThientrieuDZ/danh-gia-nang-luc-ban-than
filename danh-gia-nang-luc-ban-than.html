@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh Giá Năng Lực Bản Thân</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #dbeafe;
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lexend', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: 
+                linear-gradient(30deg, var(--primary) 12%, transparent 12.5%, transparent 87%, var(--primary) 87.5%, var(--primary)),
+                linear-gradient(150deg, var(--primary) 12%, transparent 12.5%, transparent 87%, var(--primary) 87.5%, var(--primary)),
+                linear-gradient(30deg, var(--primary) 12%, transparent 12.5%, transparent 87%, var(--primary) 87.5%, var(--primary)),
+                linear-gradient(150deg, var(--primary) 12%, transparent 12.5%, transparent 87%, var(--primary) 87.5%, var(--primary));
+            background-size: 80px 140px;
+            background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 100px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px var(--shadow);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 100px;
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px var(--shadow);
+            border: 1px solid var(--border);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease-out forwards;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .question-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.15);
+        }
+
+        .question-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 16px 24px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Lexend', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--primary-light);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .option-btn.selected::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 50px auto 0;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Lexend', sans-serif;
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.5);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results {
+            display: none;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 24px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        .score-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .score-label {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .analysis-section {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .analysis-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .analysis-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .strength-item, .improve-item {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .strength-item {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+        }
+
+        .improve-item {
+            background: var(--warning-light);
+            border-left: 4px solid var(--warning);
+        }
+
+        .strength-item:hover, .improve-item:hover {
+            transform: translateX(8px);
+        }
+
+        .item-icon {
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .item-text {
+            flex: 1;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .recommendation {
+            background: linear-gradient(135deg, var(--accent-light), #fef3c7);
+            border-radius: 16px;
+            padding: 24px;
+            border-left: 4px solid var(--accent);
+            margin-top: 20px;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recommendation-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        .reset-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 40px auto 0;
+            padding: 16px 32px;
+            background: var(--card-bg);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .reset-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.15;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 16px 60px;
+            }
+
+            .question-card {
+                padding: 30px 24px;
+            }
+
+            .options {
+                flex-direction: column;
+            }
+
+            .option-btn {
+                min-width: 100%;
+            }
+
+            .score-number {
+                font-size: 4rem;
+            }
+
+            .analysis-section {
+                padding: 30px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Đánh Giá Năng Lực Bản Thân</h1>
+            <p class="subtitle">15 câu hỏi giúp bạn nhìn nhận rõ ràng về năng lực và sự phát triển nghề nghiệp của mình</p>
+        </header>
+
+        <div id="questionnaire">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="questionsContainer"></div>
+
+            <button class="submit-btn" id="submitBtn" disabled>
+                Xem Kết Quả Đánh Giá
+            </button>
+        </div>
+
+        <div class="results" id="results">
+            <!-- Results will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                text: "Khi bắt đầu một công việc mới, bạn có hoàn thành nó tốt hơn không, hay chỉ duy trì nó ở mức tương đối so với người trước?",
+                options: [
+                    { value: 2, label: "Tốt hơn nhiều" },
+                    { value: 1, label: "Tốt hơn một chút" },
+                    { value: 0, label: "Duy trì mức cũ" }
+                ]
+            },
+            {
+                id: 2,
+                text: "Bạn có thường xuyên nhận ra được lỗi sai của người khác trong công việc và rút kinh nghiệm từ đó?",
+                options: [
+                    { value: 2, label: "Thường xuyên" },
+                    { value: 1, label: "Thỉnh thoảng" },
+                    { value: 0, label: "Hiếm khi" }
+                ]
+            },
+            {
+                id: 3,
+                text: "Khi có vấn đề hoặc task mới khó, bạn có nhanh chóng định hướng được cách giải quyết không?",
+                options: [
+                    { value: 2, label: "Có, nhanh chóng" },
+                    { value: 1, label: "Cần thời gian suy nghĩ" },
+                    { value: 0, label: "Thường bị bế tắc" }
+                ]
+            },
+            {
+                id: 4,
+                text: "Nếu làm sai và được feedback, bạn sẽ lặp lại lỗi đó như thế nào?",
+                options: [
+                    { value: 2, label: "Không bao giờ lặp lại" },
+                    { value: 1, label: "Hiếm khi lặp lại" },
+                    { value: 0, label: "Thỉnh thoảng vẫn lặp lại" }
+                ]
+            },
+            {
+                id: 5,
+                text: "Bạn có hay được sếp/đồng nghiệp khen ngợi vì hiệu suất tốt?",
+                options: [
+                    { value: 2, label: "Thường xuyên" },
+                    { value: 1, label: "Thỉnh thoảng" },
+                    { value: 0, label: "Hiếm khi" }
+                ]
+            },
+            {
+                id: 6,
+                text: "Bạn đã từng tạo ra quy trình riêng giúp rút ngắn công việc hơn so với lúc bắt đầu?",
+                options: [
+                    { value: 2, label: "Có, nhiều lần" },
+                    { value: 1, label: "Có, vài lần" },
+                    { value: 0, label: "Chưa bao giờ" }
+                ]
+            },
+            {
+                id: 7,
+                text: "Bạn có từng đưa ra ý kiến nào đó mà được sếp áp dụng cho quy trình chung?",
+                options: [
+                    { value: 2, label: "Có, nhiều lần" },
+                    { value: 1, label: "Có, vài lần" },
+                    { value: 0, label: "Chưa bao giờ" }
+                ]
+            },
+            {
+                id: 8,
+                text: "Bạn có thường được cấp trên hỏi ý kiến khi có vấn đề phát sinh?",
+                options: [
+                    { value: 2, label: "Thường xuyên" },
+                    { value: 1, label: "Thỉnh thoảng" },
+                    { value: 0, label: "Hiếm khi" }
+                ]
+            },
+            {
+                id: 9,
+                text: "Bạn có thường được giao những task khó với nhận xét 'task này khó thôi giao cho X đi'?",
+                options: [
+                    { value: 2, label: "Thường xuyên" },
+                    { value: 1, label: "Thỉnh thoảng" },
+                    { value: 0, label: "Hiếm khi" }
+                ]
+            },
+            {
+                id: 10,
+                text: "Bạn có từng được giao training người mới (không phải bàn giao) trong khi chưa phải là leader?",
+                options: [
+                    { value: 2, label: "Có, nhiều lần" },
+                    { value: 1, label: "Có, vài lần" },
+                    { value: 0, label: "Chưa bao giờ" }
+                ]
+            },
+            {
+                id: 11,
+                text: "Bạn có thường được khách hàng cũ hoặc người quen ngỏ ý mời hợp tác lần nữa?",
+                options: [
+                    { value: 2, label: "Thường xuyên" },
+                    { value: 1, label: "Thỉnh thoảng" },
+                    { value: 0, label: "Hiếm khi/Không áp dụng" }
+                ]
+            },
+            {
+                id: 12,
+                text: "Nếu từng gửi CV cho những job yêu cầu ít kinh nghiệm hơn, bạn có thường pass các job này không?",
+                options: [
+                    { value: 2, label: "Thường pass" },
+                    { value: 1, label: "Pass một số" },
+                    { value: 0, label: "Hiếm khi/Không áp dụng" }
+                ]
+            },
+            {
+                id: 13,
+                text: "Khi nhìn thành phẩm khá xịn trong ngành, bạn có nghĩ mình sẽ làm được tương tự?",
+                options: [
+                    { value: 2, label: "Có, tự tin làm được" },
+                    { value: 1, label: "Làm được 60-80%" },
+                    { value: 0, label: "Dưới 60%" }
+                ]
+            },
+            {
+                id: 14,
+                text: "Nếu vô tình thấy bài chia sẻ về kiến thức hay, bạn có quan tâm và thử ứng dụng nó vào công việc?",
+                options: [
+                    { value: 2, label: "Có, thường xuyên" },
+                    { value: 1, label: "Thỉnh thoảng" },
+                    { value: 0, label: "Hiếm khi" }
+                ]
+            },
+            {
+                id: 15,
+                text: "So với 2 năm trước, bạn có phát triển thêm kĩ năng mới hoặc sản phẩm tốt hơn không?",
+                options: [
+                    { value: 2, label: "Có, rõ rệt" },
+                    { value: 1, label: "Có một chút" },
+                    { value: 0, label: "Không thay đổi nhiều" }
+                ]
+            }
+        ];
+
+        let answers = {};
+
+        function initializeQuestionnaire() {
+            const container = document.getElementById('questionsContainer');
+            
+            questions.forEach((question, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                card.innerHTML = `
+                    <div class="question-number">${question.id}</div>
+                    <div class="question-text">${question.text}</div>
+                    <div class="options">
+                        ${question.options.map(option => `
+                            <button class="option-btn" 
+                                    data-question="${question.id}" 
+                                    data-value="${option.value}">
+                                ${option.label}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+
+            // Add click handlers
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', handleAnswer);
+            });
+        }
+
+        function handleAnswer(e) {
+            const btn = e.target;
+            const questionId = parseInt(btn.dataset.question);
+            const value = parseInt(btn.dataset.value);
+            
+            // Remove selected class from siblings
+            const siblings = btn.parentElement.querySelectorAll('.option-btn');
+            siblings.forEach(s => s.classList.remove('selected'));
+            
+            // Add selected class to clicked button
+            btn.classList.add('selected');
+            
+            // Store answer
+            answers[questionId] = value;
+            
+            // Update progress
+            updateProgress();
+            
+            // Check if all questions answered
+            checkCompletion();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(answers).length;
+            const total = questions.length;
+            const percentage = (answered / total) * 100;
+            
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+        }
+
+        function checkCompletion() {
+            const submitBtn = document.getElementById('submitBtn');
+            if (Object.keys(answers).length === questions.length) {
+                submitBtn.disabled = false;
+            }
+        }
+
+        function calculateResults() {
+            const totalScore = Object.values(answers).reduce((sum, val) => sum + val, 0);
+            const maxScore = questions.length * 2;
+            const percentage = Math.round((totalScore / maxScore) * 100);
+            
+            return { totalScore, maxScore, percentage };
+        }
+
+        function getAnalysis(percentage, totalScore) {
+            let level, levelColor, analysis, strengths, improvements, recommendation;
+            
+            if (percentage >= 80) {
+                level = "Xuất Sắc";
+                levelColor = "--success";
+                analysis = "Chúc mừng! Năng lực của bạn đang ở mức vượt trội so với mặt bằng chung. Bạn không chỉ hoàn thành công việc tốt mà còn tạo ra giá trị thực sự cho tổ chức. Bạn có khả năng tư duy độc lập, học hỏi nhanh và không ngừng cải tiến quy trình làm việc.";
+                strengths = [
+                    "Năng lực giải quyết vấn đề xuất sắc, có thể xử lý các task khó một cách hiệu quả",
+                    "Được đồng nghiệp và cấp trên đánh giá cao, thường xuyên được tham vấn ý kiến",
+                    "Chủ động học hỏi và áp dụng kiến thức mới vào công việc",
+                    "Có khả năng tạo ra quy trình làm việc tối ưu hơn",
+                    "Hiếm khi lặp lại sai lầm, học hỏi nhanh từ feedback"
+                ];
+                improvements = [
+                    "Tiếp tục phát triển kỹ năng lãnh đạo và quản lý đội nhóm",
+                    "Mở rộng network và xây dựng personal brand trong ngành",
+                    "Cân nhắc mentoring cho các đồng nghiệp junior"
+                ];
+                recommendation = "Đây là thời điểm tuyệt vời để thương lượng tăng lương hoặc thăng tiến. Bạn cũng có thể tự tin tìm kiếm cơ hội mới ở vị trí cao hơn. Đừng ngại đề xuất các dự án lớn hoặc vai trò có tính thách thức cao hơn.";
+            } else if (percentage >= 60) {
+                level = "Tốt";
+                levelColor = "--primary";
+                analysis = "Bạn đang có năng lực vững vàng và đang trên đà phát triển tốt. Bạn hoàn thành công việc hiệu quả và có những đóng góp đáng kể cho tổ chức. Với một số điều chỉnh và phát triển thêm, bạn hoàn toàn có thể đạt được mức xuất sắc.";
+                strengths = [
+                    "Hoàn thành công việc được giao một cách hiệu quả",
+                    "Có khả năng học hỏi từ sai lầm và phản hồi",
+                    "Đôi khi được tham vấn ý kiến hoặc giao task khó",
+                    "Có ý thức cải thiện quy trình làm việc"
+                ];
+                improvements = [
+                    "Chủ động đề xuất ý tưởng và giải pháp mới nhiều hơn",
+                    "Tăng cường tư duy phản biện và phân tích vấn đề sâu hơn",
+                    "Xây dựng thói quen học hỏi liên tục và cập nhật kiến thức mới",
+                    "Nâng cao kỹ năng giao tiếp và thể hiện bản thân",
+                    "Tìm kiếm cơ hội để mentoring hoặc training người khác"
+                ];
+                recommendation = "Bạn hoàn toàn có thể thương lượng điều chỉnh lương phù hợp với đóng góp hiện tại. Nếu cảm thấy không có cơ hội phát triển ở vị trí hiện tại, đây là lúc tốt để tìm kiếm môi trường mới có nhiều thách thức hơn. Tập trung vào việc xây dựng portfolio và thể hiện impact cụ thể của bạn.";
+            } else if (percentage >= 40) {
+                level = "Trung Bình";
+                levelColor = "--warning";
+                analysis = "Bạn đang hoàn thành công việc ở mức chấp nhận được nhưng vẫn còn nhiều tiềm năng để phát triển. Đây có thể là dấu hiệu bạn đang ở vùng an toàn quá lâu hoặc chưa tìm được động lực để tiến xa hơn. Đừng lo lắng - nhận thức được điều này là bước đầu quan trọng để thay đổi!";
+                strengths = [
+                    "Hoàn thành được các công việc được giao",
+                    "Có nền tảng kiến thức cơ bản vững chắc",
+                    "Có ý thức muốn phát triển bản thân (thể hiện qua việc làm bài đánh giá này)"
+                ];
+                improvements = [
+                    "Chủ động tìm kiếm feedback và học hỏi từ người khác",
+                    "Tăng cường tư duy giải quyết vấn đề thay vì chờ hướng dẫn",
+                    "Xây dựng thói quen học hỏi kiến thức mới mỗi tuần",
+                    "Tham gia nhiều dự án/task khó hơn để tích lũy kinh nghiệm",
+                    "Quan sát và học hỏi từ những người làm việc hiệu quả",
+                    "Đặt mục tiêu rõ ràng cho sự phát triển nghề nghiệp"
+                ];
+                recommendation = "Trước khi nghĩ đến việc nhảy việc hay deal lương, hãy tập trung vào việc phát triển kỹ năng và chứng minh giá trị của bạn trong 6-12 tháng tới. Tìm mentor hoặc người có thể hướng dẫn bạn. Nếu môi trường hiện tại không tạo cơ hội học hỏi, đó mới là lý do tốt để tìm nơi mới.";
+            } else {
+                level = "Cần Phát Triển";
+                levelColor = "--danger";
+                analysis = "Kết quả cho thấy bạn đang gặp khó khăn trong việc thể hiện năng lực hoặc chưa tìm được hướng phát triển phù hợp. Điều này không có nghĩa bạn kém cỏi - có thể bạn đang làm sai nghề, ở sai môi trường, hoặc đơn giản là chưa có cơ hội thể hiện. Quan trọng là bạn cần có kế hoạch rõ ràng để thay đổi.";
+                strengths = [
+                    "Bạn có lòng dũng cảm để đối mặt với thực tế",
+                    "Nhận thức được nhu cầu phát triển bản thân",
+                    "Vẫn đang hoàn thành được công việc cơ bản"
+                ];
+                improvements = [
+                    "Đánh giá lại xem bạn có đang làm đúng ngành nghề phù hợp không",
+                    "Tìm kiếm mentor hoặc người có thể hỗ trợ và định hướng",
+                    "Bắt đầu với những mục tiêu nhỏ, cụ thể và đo lường được",
+                    "Tham gia các khóa học để nâng cao kỹ năng cơ bản",
+                    "Yêu cầu feedback thường xuyên từ cấp trên và đồng nghiệp",
+                    "Tự đặt deadline và thách thức cho bản thân mỗi tuần",
+                    "Quan sát và học hỏi từ những người xung quanh"
+                ];
+                recommendation = "Đây KHÔNG phải là thời điểm tốt để deal lương hay nhảy việc cao. Thay vào đó, hãy tập trung 100% vào việc phát triển bản thân trong 6-12 tháng tới. Có thể bạn cần thay đổi môi trường để có cơ hội học hỏi tốt hơn, nhưng đảm bảo rằng bạn đã có kế hoạch phát triển rõ ràng. Đừng ngại tìm kiếm sự giúp đỡ - mọi người đều từng bắt đầu từ đây!";
+            }
+            
+            return { level, levelColor, analysis, strengths, improvements, recommendation };
+        }
+
+        function displayResults() {
+            const { totalScore, maxScore, percentage } = calculateResults();
+            const { level, levelColor, analysis, strengths, improvements, recommendation } = getAnalysis(percentage, totalScore);
+            
+            const resultsHTML = `
+                <div class="score-card">
+                    <div class="score-number">${percentage}%</div>
+                    <div class="score-label">Điểm Năng Lực: ${level}</div>
+                </div>
+
+                <div class="analysis-section">
+                    <h2>
+                        <span class="icon">📊</span>
+                        Phân Tích Chi Tiết
+                    </h2>
+                    <p class="analysis-text">${analysis}</p>
+                </div>
+
+                <div class="analysis-section">
+                    <h2>
+                        <span class="icon">💪</span>
+                        Điểm Mạnh Của Bạn
+                    </h2>
+                    ${strengths.map(strength => `
+                        <div class="strength-item">
+                            <span class="item-icon">✓</span>
+                            <span class="item-text">${strength}</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="analysis-section">
+                    <h2>
+                        <span class="icon">🎯</span>
+                        Hướng Phát Triển
+                    </h2>
+                    ${improvements.map(improvement => `
+                        <div class="improve-item">
+                            <span class="item-icon">→</span>
+                            <span class="item-text">${improvement}</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="analysis-section">
+                    <h2>
+                        <span class="icon">💡</span>
+                        Khuyến Nghị
+                    </h2>
+                    <div class="recommendation">
+                        <div class="recommendation-title">
+                            <span>⭐</span>
+                            Lời Khuyên Cho Bước Tiếp Theo
+                        </div>
+                        <p class="recommendation-text">${recommendation}</p>
+                    </div>
+                </div>
+
+                <button class="reset-btn" onclick="resetQuiz()">Làm Lại Bài Đánh Giá</button>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('questionnaire').style.display = 'none';
+            document.getElementById('results').classList.add('active');
+            
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetQuiz() {
+            answers = {};
+            document.getElementById('questionnaire').style.display = 'block';
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('submitBtn').disabled = true;
+            
+            // Remove all selections
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize
+        initializeQuestionnaire();
+
+        // Submit button handler
+        document.getElementById('submitBtn').addEventListener('click', displayResults);
+    </script>
+</body>
+</html>
